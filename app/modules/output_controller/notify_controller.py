@@ -5,7 +5,9 @@ import multiprocessing
 import time
 import settings
 from logger import logger
-cfg = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+
+
+#cfg = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
 
 tn = ToastNotifier()
 
