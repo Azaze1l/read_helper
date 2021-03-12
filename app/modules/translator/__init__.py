@@ -1,1 +1,1 @@
-from app.modules.translator import translate
+from modules.translator import translate

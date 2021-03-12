@@ -1,1 +1,1 @@
-from app.modules.output_controller import notify_controller
+from modules.output_controller import notify_controller

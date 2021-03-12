@@ -1,7 +1,7 @@
 import asyncio
 import requests
 from bs4 import BeautifulSoup
-from app.modules.output_controller import notify_controller
+from modules.output_controller import notify_controller
 
 URL = 'https://dictionary.cambridge.org/dictionary/english/'
 RUS_URL = 'https://dictionary.cambridge.org/ru/словарь/англо-русский/'

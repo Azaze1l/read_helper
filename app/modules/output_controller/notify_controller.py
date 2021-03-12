@@ -19,30 +19,26 @@ tn = ToastNotifier()
 
 
 def notify_spammer(synonyms, meanings, word):
-    if len(synonyms) == 0:
+    if len(synonyms) == 0 and len(meanings) != 0:
         for meaning in meanings:
-            try:
-                tn.show_toast(title=word, msg=meaning, duration=7)
-            except IndexError:
-                break
+            tn.show_toast(title=word, msg=meaning, duration=7)
+    elif len(synonyms) == len(meanings) == 0:
+        tn.show_toast(title='Oops', msg='Ничего не найдено')
     else:
         title = '|'
         for synonym in synonyms:
             title += synonym + '|'
         for i in range(len(meanings)):
-            try:
-                tn.show_toast(title=title, msg=meanings[i], duration=7)
-            except IndexError:
-                break
+            tn.show_toast(title=title, msg=meanings[i], duration=7)
 
 
 def notify_killer():
     while True:
         if keyboard.is_pressed('Ctrl + Z'):
             break
-        time.sleep(0.2)
+        time.sleep(0.1)
 
-#soup
+
 async def notifier(synonyms, meanings, word):
     showing_func = multiprocessing.Process(target=notify_spammer, args=(synonyms, meanings, word))
     showing_func.start()
@@ -52,7 +48,6 @@ async def notifier(synonyms, meanings, word):
         if not canceler_proc.is_alive():
             showing_func.kill()
             break
-        time.sleep(0.2)
-
+        time.sleep(0.1)
     print('yep im switching')
 

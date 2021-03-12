@@ -1,1 +1,1 @@
-from app.modules.wrapper import hotkey_catcher
+from modules.wrapper import hotkey_catcher

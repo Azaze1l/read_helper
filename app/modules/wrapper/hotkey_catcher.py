@@ -1,7 +1,7 @@
 import keyboard
 import pyperclip
 import asyncio
-from app.modules.translator import translate
+from modules.translator import translate
 
 
 async def catch_searching_hotkey():

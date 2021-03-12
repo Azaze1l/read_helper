@@ -1,5 +1,4 @@
-from app.modules import wrapper
-from app.modules import translator
-from app.modules import parser
-from app.modules import output_controller
-
+from modules import wrapper
+from modules import translator
+from modules import parser
+from modules import output_controller
