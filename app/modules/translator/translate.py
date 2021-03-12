@@ -1,7 +1,7 @@
 import asyncio
 import requests
 from bs4 import BeautifulSoup
-from modules.OutputController import output_controller
+from app.modules.output_controller import notify_controller
 
 URL = 'https://dictionary.cambridge.org/dictionary/english/'
 RUS_URL = 'https://dictionary.cambridge.org/ru/словарь/англо-русский/'
@@ -13,7 +13,7 @@ HEADERS = {
 }
 
 
-async def translate(word):
+async def find_synonyms_and_definitions(word):
     print(word)
     html = requests.get(URL + word, headers=HEADERS).text
     html_rus = requests.get(RUS_URL + word, headers=HEADERS).text
@@ -23,6 +23,6 @@ async def translate(word):
     meanings = [i.text for i in soup_eng.find_all('div', class_='def ddef_d db')]
     print(synonyms)
     print(meanings)
-    await output_controller.notifier(synonyms, meanings, word)
+    await notify_controller.notifier(synonyms, meanings, word)
     await asyncio.sleep(0.1)
     pass

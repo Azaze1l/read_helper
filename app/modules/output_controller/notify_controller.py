@@ -9,10 +9,6 @@ TODO:
 
 import pdfkit
 from win10toast import ToastNotifier
-import asyncio
-from modules.Wrapper import wrapper
-import pyperclip
-from modules.Wrapper import wrapper
 import concurrent.futures
 import keyboard
 import multiprocessing
@@ -60,6 +56,4 @@ async def notifier(synonyms, meanings, word):
             print('yep im switching')
             showing_func.terminate()
             showing_func.kill()
-
-
 
