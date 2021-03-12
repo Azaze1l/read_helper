@@ -3,16 +3,16 @@ TODO:
 разобраться с IO задачей отлова хоткеев и настроить выход из цикла уведомлений при достаточном ознакомлении с переводом
     1)после завершения процесса уничтожать уведомление
         1.1 наверное наследоваться от класса ToastNotifier...
-    2)добавить в cancel функцию отчет времени после которого возвращается False чтобы выйти из корутины
-    или получше подумать над логикой...
+
 """
 
 import pdfkit
 from win10toast import ToastNotifier
-import concurrent.futures
 import keyboard
 import multiprocessing
 import time
+
+
 cfg = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
 
 tn = ToastNotifier()
@@ -20,22 +20,20 @@ tn = ToastNotifier()
 
 def notify_spammer(synonyms, meanings, word):
     if len(synonyms) == 0:
-        for i in range(3):
+        for meaning in meanings:
             try:
-                tn.show_toast(title=word, msg=meanings[i], duration=7)
+                tn.show_toast(title=word, msg=meaning, duration=7)
             except IndexError:
                 break
     else:
-        title = ''
-        msg = ''
+        title = '|'
         for synonym in synonyms:
-            title += synonym + ' '
-        for i in range(3):
+            title += synonym + '|'
+        for i in range(len(meanings)):
             try:
-                msg += meanings[i] + '\n'
+                tn.show_toast(title=title, msg=meanings[i], duration=7)
             except IndexError:
                 break
-        tn.show_toast(title=title, msg=msg, duration=15)
 
 
 def notify_killer():
@@ -43,17 +41,18 @@ def notify_killer():
         if keyboard.is_pressed('Ctrl + Z'):
             break
         time.sleep(0.2)
-    return True
 
-
+#soup
 async def notifier(synonyms, meanings, word):
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        canceler = executor.submit(notify_killer)
-        showing_func = multiprocessing.Process(target=notify_spammer, args=(synonyms, meanings, word))
-        showing_func.start()
-        print(canceler.result())
-        if canceler.result():
-            print('yep im switching')
-            showing_func.terminate()
+    showing_func = multiprocessing.Process(target=notify_spammer, args=(synonyms, meanings, word))
+    showing_func.start()
+    canceler_proc = multiprocessing.Process(target=notify_killer)
+    canceler_proc.start()
+    while showing_func.is_alive():
+        if not canceler_proc.is_alive():
             showing_func.kill()
+            break
+        time.sleep(0.2)
+
+    print('yep im switching')
 

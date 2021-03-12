@@ -20,7 +20,7 @@ async def find_synonyms_and_definitions(word):
     soup_eng = BeautifulSoup(html, 'html.parser')
     soup_rus = BeautifulSoup(html_rus, 'html.parser')
     synonyms = [i.text for i in soup_rus.find_all('span', class_='sense-title dsense-title')]
-    meanings = [i.text for i in soup_eng.find_all('div', class_='def ddef_d db')]
+    meanings = [i.text.replace(': ', '') for i in soup_eng.find_all('div', class_='def ddef_d db')]
     print(synonyms)
     print(meanings)
     await notify_controller.notifier(synonyms, meanings, word)
