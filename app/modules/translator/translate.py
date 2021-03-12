@@ -1,5 +1,6 @@
 import asyncio
 import requests
+from logger import logger
 from bs4 import BeautifulSoup
 from modules.output_controller import notify_controller
 
@@ -14,15 +15,20 @@ HEADERS = {
 
 
 async def find_synonyms_and_definitions(word):
-    print(word)
+    logger.info(f'Переводится слово: {word}')
     html = requests.get(URL + word, headers=HEADERS).text
     html_rus = requests.get(RUS_URL + word, headers=HEADERS).text
     soup_eng = BeautifulSoup(html, 'html.parser')
     soup_rus = BeautifulSoup(html_rus, 'html.parser')
+    sections = soup_eng.find_all('div', class_='pr entry-body__el')
+    word_classes = []
+    meanings = []
+    for section in sections:
+        word_class = section.find('div', class_='posgram dpos-g hdib lmr-5').find('span').text
+        meanings_on_section = [i.text.replace(': ', '') for i in section.find_all('div', class_='def ddef_d db')]
+        word_classes.append(word_class)
+        meanings.append(meanings_on_section)
     synonyms = [i.text for i in soup_rus.find_all('span', class_='sense-title dsense-title')]
-    meanings = [i.text.replace(': ', '') for i in soup_eng.find_all('div', class_='def ddef_d db')]
-    print(synonyms)
-    print(meanings)
-    await notify_controller.notifier(synonyms, meanings, word)
+    await notify_controller.notifier(synonyms, meanings, word_classes, word)
     await asyncio.sleep(0.1)
-    pass
+
