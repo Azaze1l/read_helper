@@ -1,8 +1,13 @@
-import asyncio
 import requests
 from logger import logger
 from bs4 import BeautifulSoup
+from modules.wrapper import hotkey_catcher
 from modules.output_controller import notify_controller
+from modules.parser import parse_pronunciation
+from modules.output_controller import pronunciation_player
+import multiprocessing
+from settings import UK_PRONUNCIATION, US_PRONUNCIATION
+
 
 URL = 'https://dictionary.cambridge.org/dictionary/english/'
 RUS_URL = 'https://dictionary.cambridge.org/ru/словарь/англо-русский/'
@@ -24,11 +29,25 @@ async def find_synonyms_and_definitions(word):
     word_classes = []
     meanings = []
     for section in sections:
-        word_class = section.find('div', class_='posgram dpos-g hdib lmr-5').find('span').text
-        meanings_on_section = [i.text.replace(': ', '') for i in section.find_all('div', class_='def ddef_d db')]
-        word_classes.append(word_class)
-        meanings.append(meanings_on_section)
+        try:
+            word_class = section.find('div', class_='posgram dpos-g hdib lmr-5').find('span').text
+            meanings_on_section = [i.text.replace(': ', '') for i in section.find_all('div', class_='def ddef_d db')]
+            word_classes.append(word_class)
+            meanings.append(meanings_on_section)
+        except AttributeError:
+            logger.info('Это слово не найдено в словаре')
+            await hotkey_catcher.catch_searching_hotkey()
     synonyms = [i.text for i in soup_rus.find_all('span', class_='sense-title dsense-title')]
+    pronunciations = []
+    try:
+        uk_pr, us_pr = parse_pronunciation.parse(html)
+        if UK_PRONUNCIATION:
+            pronunciations.append(uk_pr)
+        if US_PRONUNCIATION:
+            pronunciations.append(us_pr)
+            pronunciation_proc = multiprocessing.Process(target=pronunciation_player.play, args=(pronunciations,))
+            pronunciation_proc.start()
+    except Exception:
+        pass
     await notify_controller.notifier(synonyms, meanings, word_classes, word)
-    await asyncio.sleep(0.1)
 
