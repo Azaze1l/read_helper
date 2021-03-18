@@ -45,8 +45,8 @@ async def find_synonyms_and_definitions(word):
             pronunciations.append(uk_pr)
         if US_PRONUNCIATION:
             pronunciations.append(us_pr)
-            pronunciation_proc = multiprocessing.Process(target=pronunciation_player.play, args=(pronunciations,))
-            pronunciation_proc.start()
+        pronunciation_proc = multiprocessing.Process(target=pronunciation_player.play, args=(pronunciations,))
+        pronunciation_proc.start()
     except Exception:
         pass
     await notify_controller.notifier(synonyms, meanings, word_classes, word)
